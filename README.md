@@ -26,13 +26,13 @@
 
 ## THÀNH VIÊN NHÓM
 <a name="thanhvien"></a>
-| STT    | MSSV          | Họ và Tên              | Github                                               | Email                   |
-| ------ |:-------------:| ----------------------:|-----------------------------------------------------:|-------------------------:
-| 1      | 24520370      | Hà Phan Khánh Duy      |                                                      |24520370@gm.uit.edu.vn   |
-| 2      | 23520886      | Nguyễn Trung Kiên      |                                                      |24520886@gm.uit.edu.vn   |
-| 3      | 23521751      | Hồ Thị Phương Thùy     |                                                      |24521751@gm.uit.edu.vn   |
-| 4      | 23521651      | Trần Thị Thanh Thảo    |                                                      |24521651@gm.uit.edu.vn   |
-| 5      | 23520857      | Đinh Vũ Minh Khôi      |                                                      |24520857@gm.uit.edu.vn   |
+| STT | MSSV     | Họ và Tên            | GitHub                                 | Email                  |
+| :-- | :------- | :------------------- | :------------------------------------- | :--------------------- |
+| 1   | 24520370 | Hà Phan Khánh Duy    | https://github.com/khzuy               | 24520370@gm.uit.edu.vn |
+| 2   | 24521751 | Hồ Thị Phương Thùy   | https://github.com/phthuyy             | 24521751@gm.uit.edu.vn |
+| 3   | 24521651 | Trần Thị Thanh Thảo  | https://github.com/thanhtharo          | 24521651@gm.uit.edu.vn |
+| 4   | 24520886 | Nguyễn Trung Kiên    | https://github.com/kiengkvn2305        | 24520886@gm.uit.edu.vn |
+| 5   | 2452     | Đinh Vũ Minh Khôi    |                                        |                        |
 
 ## ĐỒ ÁN MÔN HỌC
 <a name="doan"></a>
