@@ -32,7 +32,7 @@
 | 2   | 24521751 | Hồ Thị Phương Thùy   | https://github.com/phthuyy             | *24521751@gm.uit.edu.vn* |
 | 3   | 24521651 | Trần Thị Thanh Thảo  | https://github.com/thanhtharo          | *24521651@gm.uit.edu.vn* |
 | 4   | 24520886 | Nguyễn Trung Kiên    | https://github.com/kiengkvn2305        | *24520886@gm.uit.edu.vn* |
-| 5   | 2452     | Đinh Vũ Minh Khôi    |                                        | *24520857@gm.uit.edu.vn* |
+| 5   | 2452     | Đinh Vũ Minh Khôi    | https://github.com/MKJunior702         | *24520857@gm.uit.edu.vn* |
 
 ## ĐỒ ÁN MÔN HỌC
 <a name="doan"></a>
