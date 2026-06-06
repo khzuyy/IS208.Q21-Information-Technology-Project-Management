@@ -37,7 +37,7 @@
 | 2   | 24520370 | Hà Phan Khánh Duy    | https://github.com/khzuy               | *24520370@gm.uit.edu.vn* |
 | 3   | 24521751 | Hồ Thị Phương Thùy   | https://github.com/phthuyy             | *24521751@gm.uit.edu.vn* |
 | 4   | 24521651 | Trần Thị Thanh Thảo  | https://github.com/thanhtharo          | *24521651@gm.uit.edu.vn* |
-| 5   | 24520500 | Đinh Vũ Minh Khôi    |                                        | *24520857@gm.uit.edu.vn* |
+| 5   | 24520857 | Đinh Vũ Minh Khôi    |                                        | *24520857@gm.uit.edu.vn* |
 
 ## ĐỘNG LỰC HÌNH THÀNH DỰ ÁN
 ## MỤC TIÊU DỰ ÁN
