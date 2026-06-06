@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hỗ trợ khách hàng</title> 
+    <link rel="stylesheet" href="css/chatbot.css">
+</head>
+<body>
+
+<div class="chat-widget">
+    <!-- Header -->
+    <div class="chat-header">
+        <div class="avatar">🎫</div>
+        <div class="header-info">
+            <h3>Trợ lý hỗ trợ</h3>
+            <div class="status">
+                <div class="status-dot"></div>
+                <span>Đang hoạt động</span>
+            </div>
+        </div>
+        <button class="btn-clear" onclick="clearChat()">Cuộc trò chuyện mới</button>
+    </div>
+
+    <!-- Messages -->
+    <div class="chat-messages" id="chatMessages">
+        <!-- Tin nhắn chào -->
+        <div class="message bot">
+            <div class="message-avatar">🤖</div>
+            <div>
+                <div class="bubble">
+                    Xin chào! Tôi là trợ lý hỗ trợ khách hàng. Tôi có thể giúp bạn đặt vé, tra cứu đơn hàng, hoặc giải đáp thắc mắc về sự kiện. Bạn cần hỗ trợ gì không? 😊
+                </div>
+                <div class="message-time">Vừa xong</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick replies -->
+    <div class="quick-replies" id="quickReplies">
+        <button class="quick-btn" onclick="sendQuick('Tôi muốn mua vé')">🎟️ Mua vé</button>
+        <button class="quick-btn" onclick="sendQuick('Kiểm tra đơn hàng của tôi')">📋 Tra đơn hàng</button>
+        <button class="quick-btn" onclick="sendQuick('Tôi muốn huỷ vé và hoàn tiền')">↩️ Huỷ vé</button>
+        <button class="quick-btn" onclick="sendQuick('Có sự kiện gì sắp diễn ra không?')">🗓️ Sự kiện mới</button>
+    </div>
+
+    <!-- Input -->
+    <div class="chat-input-area">
+        <textarea
+            class="chat-input"
+            id="messageInput"
+            placeholder="Nhập tin nhắn..."
+            rows="1"
+            onkeydown="handleKeyDown(event)"
+            oninput="autoResize(this)"
+        ></textarea>
+        <button class="btn-send" id="sendBtn" onclick="sendMessage()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+        </button>
+    </div>
+</div>
+
+<div class="error-toast" id="errorToast"></div>
+
+<!-- api.js phải load trước chatbot.js vì chatbot.js dùng apiFetch() -->
+<script src="js/common/api.js"></script>
+<script src="js/chatbot/chatbot.js"></script>
+</body>
+</html>

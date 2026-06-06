@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Chỉnh Sửa Khuyến Mãi</title>
+  <link rel="stylesheet" href="css/font.css" />
+<link rel="stylesheet" href="css/Ve.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Chỉnh Sửa Khuyến Mãi</h1>
+
+    <div class="form-group">
+      <label>Sự kiện áp dụng</label>
+      <!-- FIX: đổi thành multiple để khớp với trang tạo khuyến mãi -->
+      <select id="danhSachSuKien" multiple
+          style="width:100%; padding:12px; border:1px solid #ccc; border-radius:10px;
+                 font-size:15px; box-sizing:border-box; min-height:120px;">
+      </select>
+      <small style="color:#888">Giữ Ctrl để chọn nhiều sự kiện</small>
+    </div>
+
+    <div class="form-group">
+      <label>Mã code</label>
+      <input type="text" id="maCode">
+    </div>
+
+    <div class="form-group">
+      <label>Mức khuyến mãi (%)</label>
+      <input type="number" id="mucKhuyenMai" min="0" max="100">
+    </div>
+
+    <div class="form-group">
+      <label>Lượt sử dụng tối đa</label>
+      <input type="number" id="luotSuDung" min="1">
+    </div>
+
+    <div class="form-group">
+      <label>Lượt đã sử dụng</label>
+      <input type="number" id="luotDaDung" readonly
+        style="background:#f3f4f6; color:#6b7280; cursor:not-allowed;">
+      <small style="color:#888">Lượt tối đa mới phải lớn hơn số này</small>
+    </div>
+
+    <div class="form-group">
+      <label>Trạng thái</label>
+      <select id="trangThai" style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px; box-sizing:border-box; font-size:15px;">
+        <option value="active">Đang hoạt động</option>
+        <option value="inactive">Ngừng hoạt động</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Ngày bắt đầu</label>
+      <input type="date" id="ngayBatDau">
+    </div>
+
+    <div class="form-group">
+      <label>Ngày kết thúc</label>
+      <input type="date" id="ngayKetThuc">
+    </div>
+
+    <div class="button-group">
+      <button onclick="updateVoucher()">Cập nhật</button>
+      <button onclick="goBack()">Quay lại</button>
+    </div>
+  </div>
+
+  <script src="js/common/api.js"></script>
+  <script src="js/common/authGuard.js"></script>
+  <script src="js/voucher/editVoucher.js"></script>
+</body>
+</html>

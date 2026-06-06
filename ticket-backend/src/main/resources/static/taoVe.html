@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tạo vé — TICKET</title>
+  <link rel="stylesheet" href="css/font.css" />
+<link rel="stylesheet" href="css/createEvent.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>🎫 Tạo vé mới</h1>
+
+    <div class="form-group">
+      <label>Sự kiện <span class="required-mark">*</span></label>
+      <select id="maSuKien" onchange="onEventChange()">
+        <option value="">-- Chọn sự kiện --</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Tên vé <span class="required-mark">*</span></label>
+      <input type="text" id="tenVe" placeholder="VD: Vé VIP, Vé Thường, Vé Early Bird" />
+    </div>
+
+    <div class="form-group">
+      <label>Loại vé <span class="required-mark">*</span></label>
+      
+<select id="loaiVe">
+    <option value="VIP">VIP</option>
+    <option value="Thường">Thường</option>
+</select>
+
+    </div>
+
+    <div class="price-row">
+      <div class="form-group">
+        <label>Giá vé (₫) <span class="required-mark">*</span></label>
+        <input type="number" id="gia" placeholder="VD: 500000" min="0" />
+        <div class="form-hint">Số lượng vé sẽ tự động: VIP = 30, Thường = 70</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Mô tả vé</label>
+      <textarea id="moTa" placeholder="Quyền lợi đi kèm, chỗ ngồi, lưu ý..."></textarea>
+    </div>
+
+    <div id="msgBox" style="margin-bottom:12px;font-size:0.88rem;"></div>
+
+    <div class="button-group">
+      <button class="create-btn" onclick="createTicket()">Tạo vé</button>
+      <button class="cancel-btn" onclick="goBack()">Hủy</button>
+    </div>
+  </div>
+
+  <script src="js/common/api.js"></script>
+  <script src="js/common/authGuard.js"></script>
+  <script src="js/ticket/createTicket.js"></script>
+</body>
+</html>

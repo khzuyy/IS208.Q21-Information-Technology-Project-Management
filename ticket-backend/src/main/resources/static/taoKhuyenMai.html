@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Tạo Khuyến Mãi</title>
+  <link rel="stylesheet" href="css/font.css" />
+<link rel="stylesheet" href="css/createEvent.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Tạo Khuyến Mãi</h1>
+
+    <div class="form-group">
+        <label>Sự kiện áp dụng</label>
+        <select id="danhSachSuKien" multiple
+            style="width:100%; padding:12px; border:1px solid #ccc; border-radius:10px;
+                  font-size:15px; box-sizing:border-box; min-height:120px;">
+        </select>
+        <small style="color:#888">Giữ Ctrl để chọn nhiều sự kiện</small>
+    </div>
+
+    <div class="form-group">
+      <label>Mã code</label>
+      <input type="text" id="maCode" placeholder="Nhập mã voucher">
+    </div>
+
+    <div class="form-group">
+      <label>Mức khuyến mãi (%)</label>
+      <input type="number" id="mucKhuyenMai" placeholder="0 – 100" min="0" max="100">
+    </div>
+
+    <div class="form-group">
+      <label>Lượt sử dụng tối đa</label>
+      <input type="number" id="soLuong" placeholder="Nhập số lượt" min="1">
+    </div>
+
+    <div class="form-group">
+      <label>Ngày bắt đầu</label>
+      <input type="date" id="ngayBatDau">
+    </div>
+
+    <div class="form-group">
+      <label>Ngày kết thúc</label>
+      <input type="date" id="ngayKetThuc">
+    </div>
+
+    <div class="button-group">
+      <button class="create-btn" onclick="createVoucher()">Tạo Khuyến Mãi</button>
+      <button class="cancel-btn" onclick="goBack()">Hủy</button>
+    </div>
+  </div>
+
+  <!-- Model: api.js | Guard: authGuard.js | Controller: createVoucher.js -->
+  <script src="js/common/api.js"></script>
+  <script src="js/common/authGuard.js"></script>
+  <script src="js/voucher/createVoucher.js"></script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Cập Nhật Vé</title>
+  <link rel="stylesheet" href="css/font.css" />
+<link rel="stylesheet" href="css/createEvent.css">
+</head>
+<body>
+  <div class="container">
+    <h1>✏️ Cập Nhật Vé</h1>
+
+    <div class="form-group">
+      <label>Tên vé <span style="color:#e55">*</span></label>
+      <input type="text" id="tenVe" placeholder="VD: Vé VIP, Vé Thường...">
+    </div>
+
+    <div class="form-group">
+      <label>Loại vé <span style="color:#e55">*</span></label>
+      
+<select id="loaiVe" style="width:100%;padding:12px;border:1px solid #ccc;border-radius:10px;font-size:15px;box-sizing:border-box;background:#f3f4f6;color:#666;cursor:not-allowed" disabled>
+  <option value="VIP">VIP</option>
+  <option value="Thường">Thường</option>
+</select>
+<div style="font-size:.75rem;color:#aaa;margin-top:4px">
+  Không thể chỉnh sửa loại vé sau khi tạo
+</div>
+
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div class="form-group">
+        <label>Giá vé (₫) <span style="color:#e55">*</span></label>
+        <input type="number" id="gia" min="0" placeholder="VD: 500000">
+      </div>
+      <div class="form-group">
+        <label>Số lượng</label>
+        <input type="number" id="soLuong" disabled
+               style="background:#f3f4f6;color:#888;cursor:not-allowed">
+        <div style="font-size:.75rem;color:#aaa;margin-top:4px">
+          Số lượng cố định theo loại vé (VIP = 30, Thường = 70)
+        </div>
+      </div>
+    </div>
+
+    <!-- FIX: đổi input text thành select để tránh nhập sai giá trị -->
+    <div class="form-group">
+      <label>Trạng thái</label>
+      <select id="trangThai" style="width:100%;padding:12px;border:1px solid #ccc;border-radius:10px;font-size:15px;box-sizing:border-box;background:white">
+        <option value="available">Còn vé</option>
+        <option value="soldout">Hết vé</option>
+        <option value="unavailable">Tạm ngưng</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Mô tả vé</label>
+      <textarea id="moTa" placeholder="Quyền lợi đi kèm, chỗ ngồi, lưu ý..."></textarea>
+    </div>
+
+    <!-- FIX: thêm msgBox để hiển thị lỗi thay vì dùng alert -->
+    <div id="msgBox" style="margin-bottom:12px;font-size:0.88rem;"></div>
+
+    <div class="button-group">
+      <button class="create-btn" onclick="updateTicket()">Cập nhật vé</button>
+      <button class="cancel-btn" onclick="goBack()">Quay lại</button>
+    </div>
+  </div>
+
+  <script src="js/common/api.js"></script>
+  <script src="js/common/authGuard.js"></script>
+  <script src="js/ticket/editTicket.js"></script>
+</body>
+</html>

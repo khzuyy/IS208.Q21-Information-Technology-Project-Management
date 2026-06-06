@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1, width=device-width" />
+  <title>TICKET — Trang nhân viên</title>
+  <link rel="stylesheet" href="css/font.css" />
+<link rel="stylesheet" href="css/login.css" />
+  <link rel="stylesheet" href="css/customer.css" />
+
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <div class="header-child"></div>
+    <div class="ticket-wrapper">
+      <div class="ticket">TICKET</div>
+    </div>
+    <div class="frame-parent">
+      <div class="bn-cn-tm-g-wrapper">
+        <h3 class="bn-cn-tm">Bạn cần tìm gì</h3>
+      </div>
+      <input class="search-area" type="text" id="globalSearch"
+             placeholder="Tìm sự kiện..." oninput="onGlobalSearch()" />
+      <div class="dropdown">
+        <button class="btn" onclick="toggleMenu(event)">
+          <span class="avatar-icon">👤</span> Tài khoản
+        </button>
+        <div id="menu" class="dropdown-content">
+          <a href="hoSo.html">🙍 Hồ sơ tài khoản</a>
+          <a href="doiMatKhau.html">🔑 Đổi mật khẩu</a>
+          <hr style="margin:4px 0; border-color:#eee;">
+          <a href="#" onclick="logout()" class="logout-link">🚪 Đăng xuất</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== HERO BANNER ===== -->
+  <section class="hero-banner">
+    <div class="hero-content">
+      <p class="hero-sub">Chào mừng trở lại, <span id="welcomeName">bạn</span> 👋</p>
+      <h1 class="hero-title">Khám phá sự kiện<br>đang chờ bạn</h1>
+      <p class="hero-desc">Hỗ trợ khách hàng hết mình</p>
+    </div>
+    <div class="hero-deco"></div>
+  </section>
+
+  <!-- ===== TAB NAV ===== -->
+  <div class="tab-nav">
+    <button class="tab-btn active" id="tab-events"    onclick="showTab('events')">🎪 Sự kiện</button>
+    <button class="tab-btn"        id="tab-myTickets" onclick="showTab('myTickets')">🎫 Vé đã bán</button>
+    <button class="tab-btn"        id="tab-kpi"       onclick="showTab('kpi')">📊 Báo cáo KPI</button>
+  </div>
+
+  <style>
+    .tab-btn-checkin {
+      background: linear-gradient(135deg, #0d9488, #0f766e) !important;
+      color: #fff !important;
+      border-color: #0d9488 !important;
+      font-weight: 700 !important;
+    }
+    .tab-btn-checkin:hover {
+      background: linear-gradient(135deg, #0f766e, #0d5c57) !important;
+      box-shadow: 0 4px 16px rgba(13,148,136,.35);
+    }
+  </style>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="main-content">
+
+    <!-- TAB: SỰ KIỆN -->
+    <div id="pane-events" class="tab-pane active">
+      <div class="filter-panel">
+        <input type="text" id="filterEvent" placeholder="🔍 Tìm theo tên sự kiện..." oninput="applyEventFilter()" />
+        <select id="filterSort" onchange="applyEventFilter()">
+          <option value="">Sắp xếp</option>
+          <option value="asc">Ngày tăng dần</option>
+          <option value="desc">Ngày giảm dần</option>
+        </select>
+        <button class="filter-btn" onclick="applyEventFilter()">Lọc</button>
+      </div>
+      <div id="eventGrid" class="event-grid">
+        <div class="loading-state"><div class="spinner"></div><p>Đang tải sự kiện...</p></div>
+      </div>
+    </div>
+
+    <!-- TAB: VÉ ĐÃ BÁN -->
+    <div id="pane-myTickets" class="tab-pane">
+      <!-- Bộ lọc ngày -->
+      <div class="filter-panel" id="ticketFilterPanel" style="margin-bottom:16px">
+        <label style="font-size:.85rem;font-weight:600;color:#555;white-space:nowrap">📅 Từ ngày</label>
+        <input type="date" id="filterTicketFrom" onchange="applyTicketDateFilter()"
+               style="flex:1;min-width:130px" />
+        <label style="font-size:.85rem;font-weight:600;color:#555;white-space:nowrap">đến</label>
+        <input type="date" id="filterTicketTo" onchange="applyTicketDateFilter()"
+               style="flex:1;min-width:130px" />
+        <button class="filter-btn" onclick="applyTicketDateFilter()">Lọc</button>
+        <button class="filter-btn" onclick="clearTicketDateFilter()"
+                style="background:#f3f4f6;color:#555;border:1.5px solid #e5e7eb">✕ Xóa lọc</button>
+      </div>
+      <div id="ticketFilterInfo" style="font-size:.83rem;color:#888;margin-bottom:10px;padding:0 4px;display:none"></div>
+      <div id="myTicketsList" class="my-tickets-list">
+        <div class="loading-state"><div class="spinner"></div><p>Đang tải vé...</p></div>
+      </div>
+    </div>
+
+    <!-- TAB: BÁO CÁO KPI -->
+    <div id="pane-kpi" class="tab-pane">
+      <div id="kpiRoot"></div>
+    </div>
+
+  </main>
+
+  <style>
+    /* ── KPI STYLES ── */
+    .kpi-wrapper { max-width:960px; margin:0 auto; padding:24px 16px; }
+    .kpi-header  { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:24px; }
+    .kpi-title   { font-size:1.3rem; font-weight:800; color:#1a1a2e; }
+    .kpi-date-nav{ display:flex; align-items:center; gap:8px; }
+    .kpi-date-nav button { background:#f3f4f6; border:1.5px solid #e5e7eb; border-radius:8px; padding:6px 14px; font-size:.88rem; font-weight:600; cursor:pointer; }
+    .kpi-date-nav button:hover { background:#e5e7eb; }
+    .kpi-date-nav span { font-weight:700; font-size:.95rem; color:#374151; min-width:110px; text-align:center; }
+
+    .kpi-cards   { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin-bottom:28px; }
+    .kpi-card    { background:#fff; border-radius:16px; padding:20px 18px; box-shadow:0 2px 12px rgba(0,0,0,.07); border:1.5px solid #f0f0f0; }
+    .kpi-card-icon { font-size:1.8rem; margin-bottom:8px; }
+    .kpi-card-val  { font-size:1.7rem; font-weight:800; color:#1a1a2e; line-height:1; }
+    .kpi-card-label{ font-size:.8rem; color:#888; font-weight:600; margin-top:6px; }
+    .kpi-card-sub  { font-size:.75rem; color:#aaa; margin-top:2px; }
+
+    .kpi-section-title { font-size:1rem; font-weight:700; color:#374151; margin:0 0 14px; }
+    .kpi-chart-wrap    { background:#fff; border-radius:16px; padding:20px; box-shadow:0 2px 12px rgba(0,0,0,.07); margin-bottom:24px; border:1.5px solid #f0f0f0; }
+    .kpi-bar-row       { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+    .kpi-bar-label     { width:70px; font-size:.8rem; color:#555; font-weight:600; text-align:right; flex-shrink:0; }
+    .kpi-bar-track     { flex:1; height:22px; background:#f3f4f6; border-radius:8px; overflow:hidden; }
+    .kpi-bar-fill      { height:100%; border-radius:8px; display:flex; align-items:center; padding-left:8px; font-size:.75rem; font-weight:700; color:#fff; transition:width .5s ease; min-width:2px; }
+    .kpi-bar-count     { width:50px; font-size:.8rem; color:#374151; font-weight:700; text-align:right; flex-shrink:0; }
+
+    .kpi-table-wrap { background:#fff; border-radius:16px; padding:20px; box-shadow:0 2px 12px rgba(0,0,0,.07); border:1.5px solid #f0f0f0; }
+    .kpi-table      { width:100%; border-collapse:collapse; font-size:.88rem; }
+    .kpi-table th   { background:#f8f9fb; padding:10px 12px; text-align:left; font-weight:700; color:#555; border-bottom:2px solid #f0f0f0; }
+    .kpi-table td   { padding:10px 12px; border-bottom:1px solid #f9f9f9; color:#333; }
+    .kpi-table tr:last-child td { border-bottom:none; }
+    .kpi-table tr:hover td { background:#fafbff; }
+    .kpi-badge       { display:inline-block; padding:3px 10px; border-radius:20px; font-size:.75rem; font-weight:700; }
+    .kpi-badge.green { background:#dcfce7; color:#15803d; }
+    .kpi-badge.blue  { background:#dbeafe; color:#1d4ed8; }
+    .kpi-empty       { text-align:center; padding:40px; color:#aaa; font-size:.95rem; }
+  </style>
+
+  <!-- ===================================================================
+       BƯỚC 1 — MODAL CHỌN VÉ
+       =================================================================== -->
+  <div id="buyOverlay" class="modal-overlay" style="display:none" onclick="closeBuyModal()"></div>
+  <div id="buyModal" class="modal-box" style="display:none">
+    <button class="modal-close" onclick="closeBuyModal()">✕</button>
+    <h2 id="modalEventName" class="modal-event-name"></h2>
+    <p  id="modalEventDate" class="modal-event-date"></p>
+    <hr class="modal-divider">
+    <div id="modalTicketList" class="modal-ticket-list"></div>
+    <div id="voucherMsg" class="buy-msg" style="margin-top:6px"></div>
+    <div class="modal-summary" id="modalSummary" style="display:none">
+      <div class="modal-total">Tổng cộng: <strong id="totalPrice">0 ₫</strong></div>
+      <button class="confirm-buy-btn" id="confirmBuyBtn" onclick="openVoucherModal()">
+        Xác nhận mua →
+      </button>
+    </div>
+    <div id="buyMsg" class="buy-msg"></div>
+  </div>
+
+  <!-- ===================================================================
+       BƯỚC 2 — MODAL SƠ ĐỒ GHẾ
+       =================================================================== -->
+  <div id="seatOverlay" class="modal-overlay" style="display:none" onclick="closeSeatModal()"></div>
+
+  <div id="seatModal" class="modal-box" style="display:none; max-width:760px; width:95vw; overflow-y:auto; max-height:92vh">
+    <button class="modal-close" onclick="closeSeatModal()">✕</button>
+
+    <h2 class="modal-event-name" style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+      💺 Chọn ghế ngồi
+    </h2>
+    <p id="seatModalSubtitle" class="modal-event-date" style="margin-bottom:12px"></p>
+
+    <!-- Loại sơ đồ (tự động theo LoaiSoDo của địa điểm) -->
+    <div id="seatLayoutBadge" style="margin-bottom:16px;font-size:.83rem;color:#555;
+      background:#f0f4ff;border-radius:8px;padding:7px 14px;font-weight:600;display:inline-block">
+    </div>
+
+    <!-- Chú thích -->
+    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;font-size:.8rem;color:#555">
+      <span style="display:flex;align-items:center;gap:5px">
+        <span style="width:16px;height:16px;border-radius:4px;background:#f7d060;display:inline-block;border:1.5px solid #c98f00"></span> VIP
+      </span>
+      <span style="display:flex;align-items:center;gap:5px">
+        <span style="width:16px;height:16px;border-radius:4px;background:#7ec8f7;display:inline-block;border:1.5px solid #2176c7"></span> Thường
+      </span>
+      <span style="display:flex;align-items:center;gap:5px">
+        <span style="width:16px;height:16px;border-radius:4px;background:#e0e0e0;display:inline-block;border:1.5px solid #aaa"></span> Đã đặt
+      </span>
+      <span style="display:flex;align-items:center;gap:5px">
+        <span style="width:16px;height:16px;border-radius:4px;background:#4caf50;display:inline-block;border:1.5px solid #388e3c"></span> Khu đang chọn
+      </span>
+    </div>
+
+    <!-- Wrapper -->
+    <div id="seatMapWrapper">
+
+      <!-- ── LAYOUT HÌNH CHỮ NHẬT ── -->
+      <div id="layoutRect" style="display:block">
+        <div style="text-align:center;background:linear-gradient(180deg,#555 0%,#888 100%);color:#fff;font-size:.75rem;letter-spacing:3px;border-radius:8px 8px 0 0;padding:7px 0;margin-bottom:18px;box-shadow:0 4px 16px rgba(0,0,0,.18)">
+          🎭 SÂN KHẤU / MÀN HÌNH CHIẾU
+        </div>
+        <div style="display:flex;gap:20px;align-items:flex-start">
+          <div id="rectSeatArea" style="flex:1"></div>
+          <div style="min-width:110px;font-size:.78rem;color:#555">
+            <div style="font-weight:700;margin-bottom:6px;color:#333">Khu VIP</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="width:14px;height:14px;background:#f7d060;border-radius:3px;border:1px solid #c98f00;display:inline-block"></span> A — Trái</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="width:14px;height:14px;background:#f7d060;border-radius:3px;border:1px solid #c98f00;display:inline-block"></span> B — Giữa</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px"><span style="width:14px;height:14px;background:#f7d060;border-radius:3px;border:1px solid #c98f00;display:inline-block"></span> C — Phải</div>
+            <div style="font-weight:700;margin-bottom:6px;color:#333">Khu thường</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="width:14px;height:14px;background:#7ec8f7;border-radius:3px;border:1px solid #2176c7;display:inline-block"></span> D — Trái</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="width:14px;height:14px;background:#7ec8f7;border-radius:3px;border:1px solid #2176c7;display:inline-block"></span> E — Giữa</div>
+            <div style="display:flex;align-items:center;gap:6px"><span style="width:14px;height:14px;background:#7ec8f7;border-radius:3px;border:1px solid #2176c7;display:inline-block"></span> F — Phải</div>
+            <div style="margin-top:14px;padding:8px;background:#f0fdf4;border-radius:8px;border:1px solid #bbf7d0;font-size:.72rem;color:#166534;line-height:1.4">
+              💡 Click vào khu để chọn ghế tự động
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── LAYOUT HÌNH TRÒN ── -->
+      <div id="layoutCircle" style="display:none">
+        <div style="display:flex;gap:20px;align-items:flex-start">
+          <div id="circleSeatArea" style="flex:1;position:relative;min-height:340px;display:flex;align-items:center;justify-content:center">
+            <svg id="circleSeatSVG" viewBox="0 0 360 360" style="width:100%;max-width:340px"></svg>
+          </div>
+          <div style="min-width:120px;font-size:.78rem;color:#555;padding-top:20px">
+            <div style="font-weight:700;margin-bottom:6px;color:#333">Khu VIP</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="width:14px;height:14px;background:#f7d060;border-radius:3px;border:1px solid #c98f00;display:inline-block"></span> A — Tây Bắc</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="width:14px;height:14px;background:#f7d060;border-radius:3px;border:1px solid #c98f00;display:inline-block"></span> B — Đông Bắc</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="width:14px;height:14px;background:#f7d060;border-radius:3px;border:1px solid #c98f00;display:inline-block"></span> C — Đông Nam</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px"><span style="width:14px;height:14px;background:#f7d060;border-radius:3px;border:1px solid #c98f00;display:inline-block"></span> D — Tây Nam</div>
+            <div style="font-weight:700;margin-bottom:6px;color:#333">Khu thường</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="width:14px;height:14px;background:#7ec8f7;border-radius:3px;border:1px solid #2176c7;display:inline-block"></span> E — Tây Bắc</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="width:14px;height:14px;background:#7ec8f7;border-radius:3px;border:1px solid #2176c7;display:inline-block"></span> F — Đông Bắc</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="width:14px;height:14px;background:#7ec8f7;border-radius:3px;border:1px solid #2176c7;display:inline-block"></span> G — Đông Nam</div>
+            <div style="display:flex;align-items:center;gap:6px"><span style="width:14px;height:14px;background:#7ec8f7;border-radius:3px;border:1px solid #2176c7;display:inline-block"></span> H — Tây Nam</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /seatMapWrapper -->
+
+    <hr class="modal-divider" style="margin:16px 0">
+
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div style="font-size:.9rem;color:#555">
+        Đã chọn: <strong id="seatSelectedCount">0</strong> ghế
+        &nbsp;|&nbsp;
+        Cần chọn: <strong id="seatRequiredCount">0</strong> ghế
+      </div>
+      <button class="confirm-buy-btn" id="seatConfirmBtn" onclick="confirmSeatSelection()" disabled
+        style="opacity:.5;cursor:not-allowed">
+        Tiếp tục →
+      </button>
+    </div>
+    <div id="seatMsg" class="buy-msg" style="margin-top:8px"></div>
+  </div>
+
+  <!-- ===== SEAT MAP STYLES ===== -->
+  <style>
+    /* ── Ghế chữ nhật — chọn theo KHU ── */
+    .rect-section-title { font-size:.78rem; font-weight:700; color:#555; margin-bottom:4px; letter-spacing:.5px; }
+    .rect-zone-row { display:flex; gap:10px; align-items:stretch; }
+    .rect-zone-card {
+      flex:1; min-height:90px; border-radius:12px; border:2.5px solid transparent;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:6px; cursor:pointer; user-select:none; position:relative;
+      transition:transform .13s, box-shadow .13s, border-color .13s; padding:10px 6px;
+    }
+    .rect-zone-card:hover:not(.rzc-booked):not(.rzc-disabled) { transform:scale(1.05); box-shadow:0 6px 18px rgba(0,0,0,.18); z-index:2; }
+    .rect-zone-card.rzc-vip    { background:linear-gradient(135deg,#fff8d6,#f7d060); border-color:#c98f00; }
+    .rect-zone-card.rzc-normal { background:linear-gradient(135deg,#dff0fb,#7ec8f7); border-color:#2176c7; }
+    .rect-zone-card.rzc-selected { background:linear-gradient(135deg,#c8f0cb,#81c784) !important; border-color:#388e3c !important; box-shadow:0 0 0 3px rgba(56,142,60,.3); }
+    .rect-zone-card.rzc-booked  { background:#ebebeb !important; border-color:#bbb !important; cursor:not-allowed; opacity:.65; }
+    .rect-zone-card.rzc-disabled { opacity:.45; cursor:not-allowed; }
+    .rzc-label { font-size:1.25rem; font-weight:800; color:#4a3200; line-height:1; }
+    .rzc-normal .rzc-label { color:#0d3c6e; }
+    .rzc-sub { font-size:.7rem; color:#7a5c00; font-weight:600; }
+    .rzc-normal .rzc-sub { color:#1558a0; }
+    .rzc-booked .rzc-label, .rzc-booked .rzc-sub { color:#aaa !important; }
+    .rzc-badge {
+      position:absolute; top:-8px; right:-8px; background:#388e3c; color:#fff;
+      border-radius:50%; width:22px; height:22px; font-size:.72rem; font-weight:800;
+      display:flex; align-items:center; justify-content:center;
+      border:2px solid #fff; box-shadow:0 2px 6px rgba(0,0,0,.2);
+    }
+    .rzc-seat-count { font-size:.65rem; color:#888; margin-top:2px; }
+    .rzc-status     { font-size:.68rem; font-weight:700; margin-top:4px; }
+    .rzc-bar-wrap   { width:100%; height:5px; background:rgba(0,0,0,.1); border-radius:99px; margin-top:4px; overflow:hidden; }
+    .rzc-bar-fill   { height:100%; border-radius:99px; transition:width .4s ease; min-width:2px; }
+    /* ── Ghế tròn (SVG) ── */
+    .circle-zone { cursor:pointer; transition:opacity .15s; }
+    .circle-zone:hover { opacity:.85; }
+    .circle-zone.cz-booked  { cursor:not-allowed; }
+    .circle-zone.cz-disabled { cursor:not-allowed; opacity:.45; }
+    #btnLayoutRect.active-layout   { border-color:#e6a800; background:#fff8e1; color:#7a5c00; }
+    #btnLayoutCircle.active-layout { border-color:#2176c7; background:#e8f4ff; color:#1558a0; }
+    #btnLayoutRect:not(.active-layout),
+    #btnLayoutCircle:not(.active-layout) { border-color:#ddd; background:#f7f7f7; color:#888; }
+  </style>
+
+  <!-- ===== SEAT MAP SCRIPT ===== -->
+  <script>
+  window._seatState = {
+    seats: [], zones: [], selected: new Set(),
+    required: 0, requiredByType: { vip:0, normal:0 }, layout: 'rect',
+    seatsPerBlock: { vip: 10, normal: 23 }, // động — tính lại mỗi lần mở modal
+    seatsPerZone:  { vip: 7,  normal: 17 }, // động — tính lại mỗi lần mở modal
+  };
+
+  const RECT_ROWS = [
+    { id:'A', type:'vip',    pos:'Trái'  },
+    { id:'B', type:'vip',    pos:'Giữa'  },
+    { id:'C', type:'vip',    pos:'Phải'  },
+    { id:'D', type:'normal', pos:'Trái'  },
+    { id:'E', type:'normal', pos:'Giữa'  },
+    { id:'F', type:'normal', pos:'Phải'  },
+  ];
+
+  const CIRCLE_ZONES = [
+    { id:'A', dir:'Tây Bắc',  type:'vip',    angle:225 },
+    { id:'B', dir:'Đông Bắc', type:'vip',    angle:315 },
+    { id:'C', dir:'Đông Nam', type:'vip',    angle:45  },
+    { id:'D', dir:'Tây Nam',  type:'vip',    angle:135 },
+    { id:'E', dir:'Tây Bắc',  type:'normal', angle:225 },
+    { id:'F', dir:'Đông Bắc', type:'normal', angle:315 },
+    { id:'G', dir:'Đông Nam', type:'normal', angle:45  },
+    { id:'H', dir:'Tây Nam',  type:'normal', angle:135 },
+  ];
+
+  /**
+   * Tính số ghế mỗi khu từ sucChua + loaiSoDo của địa điểm.
+   * Công thức:
+   *   Hình tròn  : VIP = sucChua/10*4 → chia 4 khu (A-D); Thường = sucChua/10*6 → chia 4 khu (E-H)
+   *   Hình chữ nhật: VIP = sucChua/10*3 → chia 3 khu (A-C); Thường = sucChua/10*7 → chia 3 khu (D-F)
+   * Fallback: đọc soLuong vé từ backend, cuối cùng 30/70.
+   */
+  function _computeSeatCounts() {
+    const state    = window._seatState;
+    const sucChua  = window._currentSucChua  ?? null;
+    const loaiSoDo = window._currentLoaiSoDo ?? '';
+    const isCircle = loaiSoDo.toUpperCase().includes('TRON')
+                  || loaiSoDo.toUpperCase().includes('TRÒN')
+                  || loaiSoDo.toUpperCase() === 'CIRCLE';
+
+    const vipZones  = isCircle ? 4 : 3;
+    const normZones = isCircle ? 4 : 3;
+
+    let vipTotal, normTotal;
+
+    // Ưu tiên 1: sucChua từ địa điểm — nguồn đáng tin nhất
+    if (sucChua != null && sucChua > 0) {
+      vipTotal  = isCircle ? Math.floor(sucChua / 10 * 4) : Math.floor(sucChua / 10 * 3);
+      normTotal = isCircle ? Math.floor(sucChua / 10 * 6) : Math.floor(sucChua / 10 * 7);
+    }
+    // Ưu tiên 2: soLuong từ _currentTickets — chỉ tin khi soLuong > 1
+    // (tránh nhầm với dữ liệu per-ghế có soLuong=1 mỗi item)
+    else {
+      const tickets = (window._currentTickets || []).filter(t => (t.soLuong || 0) > 1);
+      const vipT  = tickets.find(t => (t.loaiVe || '').toUpperCase().includes('VIP'));
+      const normT = tickets.find(t => {
+        const l = (t.loaiVe || '').toUpperCase()
+          .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        return !l.includes('VIP') && l !== '';
+      });
+      vipTotal  = vipT  ? (vipT.soLuong  || 30) : 30;
+      normTotal = normT ? (normT.soLuong || 70) : 70;
+    }
+
+    state.seatsPerBlock = {
+      vip:    Math.max(1, Math.floor(vipTotal  / vipZones)),
+      normal: Math.max(1, Math.floor(normTotal / normZones)),
+    };
+    state.seatsPerZone = {
+      vip:    Math.max(1, Math.floor(vipTotal  / vipZones)),   // fix: dùng vipZones thay vì hardcode 4
+      normal: Math.max(1, Math.floor(normTotal / normZones)),  // fix: dùng normZones thay vì hardcode 4
+    };
+    state.totalByType = { vip: vipTotal, normal: normTotal };
+  }
+
+  function _resolveSeatRequirements() {
+    const items = (typeof CartModel !== 'undefined' && CartModel.getItems) ? CartModel.getItems() : [];
+    const result = { vip:0, normal:0 };
+    items.forEach(item => {
+      const qty = Number(item.soLuong || 0);
+      if ((item.loaiVe || '').toUpperCase().includes('VIP')) result.vip += qty;
+      else result.normal += qty;
+    });
+    return result;
+  }
+
+  function _getSelectedCountByType(type) {
+    const state = window._seatState;
+    const src = state.layout === 'rect' ? state.seats : state.zones;
+    return Array.from(state.selected).filter(id => {
+      const s = src.find(s => s.id === id);
+      return s && s.type === type;
+    }).length;
+  }
+
+  function switchSeatLayout(layout) {
+    const state = window._seatState;
+    state.layout = layout;
+    state.selected = new Set();
+    document.getElementById('layoutRect').style.display   = layout === 'rect'   ? 'block' : 'none';
+    document.getElementById('layoutCircle').style.display = layout === 'circle' ? 'block' : 'none';
+    document.getElementById('btnLayoutRect').classList.toggle('active-layout',   layout === 'rect');
+    document.getElementById('btnLayoutCircle').classList.toggle('active-layout', layout === 'circle');
+    document.getElementById('seatMsg').textContent = '';
+    if (layout === 'rect') renderRectMap(); else renderCircleMap();
+    updateSeatSummary();
+  }
+
+  function buildRectSeats(bookedSet) {
+    const state = window._seatState;
+    state.seats = [];
+    // Prefix "R_" để tránh trùng id với circle (A1-A10)
+    RECT_ROWS.forEach(row => {
+      const perBlock = state.seatsPerBlock[row.type] || 10;
+      for (let s = 1; s <= perBlock; s++) {
+        const rawId = `${row.id}${s}`;
+        const internalId = `R_${rawId}`;
+        state.seats.push({ id:internalId, rawId, rowId:row.id, type:row.type, booked:bookedSet.has(rawId) });
+      }
+    });
+  }
+
+  function renderRectMap() {
+    const state = window._seatState;
+    const area = document.getElementById('rectSeatArea');
+    area.innerHTML = '';
+    const sections = [
+      { label:'Khu VIP',    rows:['A','B','C'], type:'vip',    positions:['Trái','Giữa','Phải'] },
+      { label:'Khu Thường', rows:['D','E','F'], type:'normal', positions:['Trái','Giữa','Phải'] },
+    ];
+    sections.forEach(sec => {
+      const titleDiv = document.createElement('div');
+      titleDiv.className = 'rect-section-title';
+      titleDiv.textContent = sec.label;
+      area.appendChild(titleDiv);
+
+      const rowDiv = document.createElement('div');
+      rowDiv.className = 'rect-zone-row';
+
+      sec.rows.forEach((rowId, idx) => {
+        const rowSeats = state.seats.filter(s => s.rowId === rowId);
+        const allBooked = rowSeats.every(s => s.booked);
+        const selInZone = rowSeats.filter(s => state.selected.has(s.id)).length;
+        const maxForType = state.requiredByType[sec.type] || 0;
+        const selForType = _getSelectedCountByType(sec.type);
+        const isDisabled = maxForType === 0 || (selInZone === 0 && selForType >= maxForType && state.selected.size >= state.required);
+
+        const card = document.createElement('div');
+        let cls = `rect-zone-card rzc-${sec.type}`;
+        if (allBooked)          cls += ' rzc-booked';
+        else if (selInZone > 0) cls += ' rzc-selected';
+        else if (isDisabled)    cls += ' rzc-disabled';
+        card.className = cls;
+
+        if (selInZone > 0) {
+          const badge = document.createElement('div');
+          badge.className = 'rzc-badge';
+          badge.textContent = selInZone;
+          card.appendChild(badge);
+        }
+
+        const lbl = document.createElement('div');
+        lbl.className = 'rzc-label';
+        lbl.textContent = rowId;
+        card.appendChild(lbl);
+
+        const sub = document.createElement('div');
+        sub.className = 'rzc-sub';
+        sub.textContent = sec.positions[idx];
+        card.appendChild(sub);
+
+        const total = rowSeats.length;
+        const booked = rowSeats.filter(s => s.booked).length;
+        const available = total - booked;
+        const pct = total > 0 ? Math.round(booked / total * 100) : 0;
+
+        // Nhãn trạng thái
+        const statusDiv = document.createElement('div');
+        statusDiv.className = 'rzc-status';
+        let statusText, statusColor, barColor;
+        if (allBooked)       { statusText='🔴 Hết chỗ';   statusColor='#dc2626'; barColor='#dc2626'; }
+        else if (pct >= 80)  { statusText='🟠 Gần hết';   statusColor='#ea580c'; barColor='#ea580c'; }
+        else if (pct >= 50)  { statusText='🟡 Còn ít';    statusColor='#ca8a04'; barColor='#f59e0b'; }
+        else                 { statusText='🟢 Còn nhiều'; statusColor='#16a34a'; barColor='#22c55e'; }
+        statusDiv.textContent = statusText;
+        statusDiv.style.color = statusColor;
+        card.appendChild(statusDiv);
+
+        // Thanh tiến trình đã đặt
+        const barWrap = document.createElement('div');
+        barWrap.className = 'rzc-bar-wrap';
+        const barFill = document.createElement('div');
+        barFill.className = 'rzc-bar-fill';
+        barFill.style.width = `${pct}%`;
+        barFill.style.background = barColor;
+        barWrap.appendChild(barFill);
+        card.appendChild(barWrap);
+
+        // Số ghế trống / tổng
+        const cnt = document.createElement('div');
+        cnt.className = 'rzc-seat-count';
+        cnt.textContent = allBooked ? 'Hết chỗ' : `${available}/${total} chỗ trống`;
+        card.appendChild(cnt);
+
+        if (!allBooked && !isDisabled) card.onclick = () => toggleRectZone(rowId, sec.type);
+        rowDiv.appendChild(card);
+      });
+
+      area.appendChild(rowDiv);
+      const sp = document.createElement('div');
+      sp.style.height = '10px';
+      area.appendChild(sp);
+    });
+  }
+
+  function toggleRectZone(rowId, type) {
+    const state = window._seatState;
+    const zoneSeats = state.seats.filter(s => s.rowId === rowId && !s.booked);
+    if (!zoneSeats.length) return;
+    const selInZone = zoneSeats.filter(s => state.selected.has(s.id));
+    const maxForType = state.requiredByType[type] || 0;
+    const selForType = _getSelectedCountByType(type);
+    const total = state.selected.size;
+
+    if (selInZone.length > 0) {
+      if (selForType < maxForType && total < state.required && selInZone.length < zoneSeats.length) {
+        const unselected = zoneSeats.find(s => !state.selected.has(s.id));
+        if (unselected) state.selected.add(unselected.id);
+      } else {
+        const lastSelected = selInZone[selInZone.length - 1];
+        state.selected.delete(lastSelected.id);
+      }
+    } else {
+      if (selForType >= maxForType || total >= state.required) {
+        document.getElementById('seatMsg').textContent =
+          `Bạn chỉ được chọn ${maxForType} ghế ${type === 'vip' ? 'VIP' : 'Thường'}.`;
+        return;
+      }
+      const unselected = zoneSeats.find(s => !state.selected.has(s.id));
+      if (unselected) state.selected.add(unselected.id);
+    }
+    document.getElementById('seatMsg').textContent = '';
+    renderRectMap();
+    updateSeatSummary();
+  }
+
+  function buildCircleZones(bookedSet) {
+    const state = window._seatState;
+    state.zones = [];
+    CIRCLE_ZONES.forEach(z => {
+      const perZone = state.seatsPerZone[z.type] || 10;
+      for (let s = 1; s <= perZone; s++) {
+        const id = `${z.id}${s}`;
+        state.zones.push({ id, zoneId:z.id, type:z.type, dir:z.dir, booked:bookedSet.has(id) });
+      }
+    });
+  }
+
+  function renderCircleMap() {
+    const svg = document.getElementById('circleSeatSVG');
+    svg.innerHTML = '';
+    const cx = 180, cy = 180;
+    const vipInner = 65, vipOuter = 100, normInner = 110, normOuter = 150;
+    const stageEl = document.createElementNS('http://www.w3.org/2000/svg','ellipse');
+    stageEl.setAttribute('cx',cx); stageEl.setAttribute('cy',cy);
+    stageEl.setAttribute('rx',52); stageEl.setAttribute('ry',38);
+    stageEl.setAttribute('fill','#ffb3c1'); stageEl.setAttribute('stroke','#e05080'); stageEl.setAttribute('stroke-width','2');
+    svg.appendChild(stageEl);
+    ['Sân khấu','Màn hình chiếu'].forEach((t,i) => {
+      const el = document.createElementNS('http://www.w3.org/2000/svg','text');
+      el.setAttribute('x',cx); el.setAttribute('y', cy - 5 + i*14);
+      el.setAttribute('text-anchor','middle'); el.setAttribute('font-size', i===0 ? '11':'9');
+      el.setAttribute('fill','#c0355a'); el.setAttribute('font-weight', i===0?'bold':'normal');
+      el.setAttribute('pointer-events','none'); el.textContent = t;
+      svg.appendChild(el);
+    });
+    const state = window._seatState;
+    [
+      { zoneId:'A', type:'vip',    startAngle:200, endAngle:270, r1:vipInner,  r2:vipOuter  },
+      { zoneId:'B', type:'vip',    startAngle:290, endAngle:360, r1:vipInner,  r2:vipOuter  },
+      { zoneId:'C', type:'vip',    startAngle:20,  endAngle:90,  r1:vipInner,  r2:vipOuter  },
+      { zoneId:'D', type:'vip',    startAngle:110, endAngle:180, r1:vipInner,  r2:vipOuter  },
+      { zoneId:'E', type:'normal', startAngle:200, endAngle:270, r1:normInner, r2:normOuter },
+      { zoneId:'F', type:'normal', startAngle:290, endAngle:360, r1:normInner, r2:normOuter },
+      { zoneId:'G', type:'normal', startAngle:20,  endAngle:90,  r1:normInner, r2:normOuter },
+      { zoneId:'H', type:'normal', startAngle:110, endAngle:180, r1:normInner, r2:normOuter },
+    ].forEach(q => {
+      const zoneSeats = state.zones.filter(z => z.zoneId === q.zoneId);
+      const allBooked = zoneSeats.every(z => z.booked);
+      const anySelected = zoneSeats.some(z => state.selected.has(z.id));
+      const maxForType = state.requiredByType[q.type] || 0;
+      const selInZone = zoneSeats.filter(z => state.selected.has(z.id)).length;
+      const canSelectMore = !allBooked && maxForType > 0;
+      const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+      g.className.baseVal = 'circle-zone';
+      const pathEl = document.createElementNS('http://www.w3.org/2000/svg','path');
+      pathEl.setAttribute('d', _arcPath(cx,cy,q.r1,q.r2,q.startAngle,q.endAngle));
+      let fill, stroke;
+      if (allBooked)        { fill='#e0e0e0'; stroke='#bbb'; g.className.baseVal+=' cz-booked'; }
+      else if (anySelected) { fill='#81c784'; stroke='#388e3c'; }
+      else if (!canSelectMore){ fill=q.type==='vip'?'#f7d060':'#7ec8f7'; stroke=q.type==='vip'?'#c98f00':'#2176c7'; g.className.baseVal+=' cz-disabled'; }
+      else                  { fill=q.type==='vip'?'#f7d060':'#7ec8f7'; stroke=q.type==='vip'?'#c98f00':'#2176c7'; }
+      pathEl.setAttribute('fill',fill); pathEl.setAttribute('stroke',stroke); pathEl.setAttribute('stroke-width','2');
+      g.appendChild(pathEl);
+      const midAngle = (q.startAngle + q.endAngle) / 2 * Math.PI / 180;
+      const midR = (q.r1 + q.r2) / 2;
+      const lx = cx + midR * Math.cos(midAngle), ly = cy + midR * Math.sin(midAngle);
+      const dirLabel = CIRCLE_ZONES.find(z => z.id === q.zoneId)?.dir || '';
+
+      // Tỉ lệ đã đặt của khu này
+      const zoneSeatsAll = state.zones.filter(z => z.zoneId === q.zoneId);
+      const totalZ = zoneSeatsAll.length;
+      const bookedZ = zoneSeatsAll.filter(z => z.booked).length;
+      const pctZ = totalZ > 0 ? bookedZ / totalZ : 0;
+
+      // Màu thanh tỉ lệ
+      let occColor;
+      if (pctZ >= 1)       occColor = '#dc2626';
+      else if (pctZ >= .8) occColor = '#ea580c';
+      else if (pctZ >= .5) occColor = '#f59e0b';
+      else                 occColor = '#22c55e';
+
+      // Vòng cung fill tỉ lệ đã đặt (overlay phía trong)
+      if (totalZ > 0 && bookedZ > 0) {
+        const arcSpan = q.endAngle - q.startAngle;
+        const fillEnd = q.startAngle + arcSpan * pctZ;
+        const fillPath = document.createElementNS('http://www.w3.org/2000/svg','path');
+        fillPath.setAttribute('d', _arcPath(cx, cy, q.r1, q.r2, q.startAngle, fillEnd));
+        fillPath.setAttribute('fill', occColor);
+        fillPath.setAttribute('opacity', '0.35');
+        fillPath.setAttribute('pointer-events','none');
+        g.appendChild(fillPath);
+      }
+
+      [{ text:q.zoneId, dy:-8, size:11, bold:true }, { text:dirLabel, dy:4, size:8, bold:false }].forEach(t => {
+        const el = document.createElementNS('http://www.w3.org/2000/svg','text');
+        el.setAttribute('x',lx); el.setAttribute('y',ly+t.dy);
+        el.setAttribute('text-anchor','middle'); el.setAttribute('font-size',t.size);
+        el.setAttribute('font-weight',t.bold?'bold':'normal');
+        el.setAttribute('fill', allBooked?'#aaa': q.type==='vip'?'#6b4800':'#0d3c6e');
+        el.setAttribute('pointer-events','none'); el.textContent = t.text;
+        g.appendChild(el);
+      });
+
+      // Số chỗ trống nhỏ bên dưới
+      const availZ = totalZ - bookedZ;
+      const availEl = document.createElementNS('http://www.w3.org/2000/svg','text');
+      availEl.setAttribute('x',lx); availEl.setAttribute('y',ly+16);
+      availEl.setAttribute('text-anchor','middle'); availEl.setAttribute('font-size','8');
+      availEl.setAttribute('font-weight','bold');
+      availEl.setAttribute('fill', allBooked ? '#aaa' : occColor);
+      availEl.setAttribute('pointer-events','none');
+      availEl.textContent = allBooked ? 'Hết' : `còn ${availZ}`;
+      g.appendChild(availEl);
+      if (selInZone > 0) {
+        const bx = cx + q.r2 * Math.cos(midAngle), by = cy + q.r2 * Math.sin(midAngle);
+        const bc = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        bc.setAttribute('cx',bx); bc.setAttribute('cy',by); bc.setAttribute('r',8);
+        bc.setAttribute('fill','#388e3c'); bc.setAttribute('stroke','#fff'); bc.setAttribute('stroke-width','1.5');
+        bc.setAttribute('pointer-events','none');
+        g.appendChild(bc);
+        const bt = document.createElementNS('http://www.w3.org/2000/svg','text');
+        bt.setAttribute('x',bx); bt.setAttribute('y',by+4); bt.setAttribute('text-anchor','middle');
+        bt.setAttribute('font-size','9'); bt.setAttribute('fill','#fff'); bt.setAttribute('font-weight','bold');
+        bt.setAttribute('pointer-events','none'); bt.textContent = selInZone;
+        g.appendChild(bt);
+      }
+      if (!allBooked && canSelectMore) { g.style.cursor='pointer'; g.onclick=()=>toggleZone(q.zoneId,q.type); }
+      svg.appendChild(g);
+    });
+  }
+
+  function _arcPath(cx,cy,r1,r2,startDeg,endDeg) {
+    const s=startDeg*Math.PI/180, e=endDeg*Math.PI/180;
+    const x1o=cx+r2*Math.cos(s),y1o=cy+r2*Math.sin(s);
+    const x2o=cx+r2*Math.cos(e),y2o=cy+r2*Math.sin(e);
+    const x1i=cx+r1*Math.cos(e),y1i=cy+r1*Math.sin(e);
+    const x2i=cx+r1*Math.cos(s),y2i=cy+r1*Math.sin(s);
+    const lg=(endDeg-startDeg)>180?1:0;
+    return `M${x1o},${y1o} A${r2},${r2} 0 ${lg},1 ${x2o},${y2o} L${x1i},${y1i} A${r1},${r1} 0 ${lg},0 ${x2i},${y2i} Z`;
+  }
+
+  function toggleZone(zoneId, type) {
+    const state = window._seatState;
+    const zoneSeats = state.zones.filter(z => z.zoneId === zoneId && !z.booked);
+    if (!zoneSeats.length) return;
+    const selInZone = zoneSeats.filter(z => state.selected.has(z.id));
+    const maxForType = state.requiredByType[type] || 0;
+    const selForType = _getSelectedCountByType(type);
+    const total = state.selected.size;
+
+    if (selInZone.length > 0) {
+      if (selForType < maxForType && total < state.required && selInZone.length < zoneSeats.length) {
+        const unselected = zoneSeats.find(z => !state.selected.has(z.id));
+        if (unselected) state.selected.add(unselected.id);
+      } else {
+        const lastSelected = selInZone[selInZone.length - 1];
+        state.selected.delete(lastSelected.id);
+      }
+    } else {
+      if (selForType >= maxForType || total >= state.required) {
+        document.getElementById('seatMsg').textContent = `Bạn chỉ được chọn ${maxForType} ghế ${type === 'vip' ? 'VIP' : 'Thường'}.`;
+        return;
+      }
+      const unselected = zoneSeats.find(z => !state.selected.has(z.id));
+      if (unselected) state.selected.add(unselected.id);
+    }
+    document.getElementById('seatMsg').textContent = '';
+    renderCircleMap();
+    updateSeatSummary();
+  }
+
+  // toggleSeat đã được thay bằng toggleRectZone (chọn theo khu)
+
+  function updateSeatSummary() {
+    const state = window._seatState;
+    const sel = state.selected.size;
+    document.getElementById('seatSelectedCount').textContent = sel;
+    document.getElementById('seatRequiredCount').textContent = state.required;
+    const btn = document.getElementById('seatConfirmBtn');
+    const ok = sel === state.required;
+    btn.disabled = !ok; btn.style.opacity = ok?'1':'.5'; btn.style.cursor = ok?'pointer':'not-allowed';
+  }
+
+  function openSeatModal(eventName, eventDate, requiredSeats, bookedSet, loaiSoDo) {
+    const state = window._seatState;
+    state.selected = new Set();
+    state.required = requiredSeats || 1;
+    state.requiredByType = _resolveSeatRequirements();
+
+    // Xác định layout dựa vào LoaiSoDo từ bảng DIADIEM
+    // Giá trị chứa 'TRON' hoặc 'CIRCLE' → hình tròn; còn lại → hình chữ nhật
+    const lsd = (loaiSoDo || '').toUpperCase();
+    const useCircle = lsd.includes('TRON') || lsd.includes('TRÒN') || lsd === 'CIRCLE';
+    state.layout = useCircle ? 'circle' : 'rect';
+
+    // Tính số ghế mỗi vị trí từ soLuong vé hiện tại (backend đã tính đúng theo sucChua & loaiSoDo)
+    _computeSeatCounts();
+    document.getElementById('seatModalSubtitle').textContent =
+      `${eventName||''} · ${eventDate||''} · Vui lòng chọn ${state.required} ghế`;
+
+    // Hiển thị badge loại sơ đồ (readonly, theo địa điểm)
+    const badge = document.getElementById('seatLayoutBadge');
+    if (badge) {
+      badge.textContent = useCircle
+        ? '🔵 Sơ đồ hình tròn (theo địa điểm)'
+        : '🟥 Sơ đồ hình chữ nhật (theo địa điểm)';
+    }
+
+    const bs = bookedSet || new Set();
+    buildRectSeats(bs);
+    buildCircleZones(bs);
+    document.getElementById('layoutRect').style.display   = useCircle ? 'none'  : 'block';
+    document.getElementById('layoutCircle').style.display = useCircle ? 'block' : 'none';
+    if (useCircle) renderCircleMap(); else renderRectMap();
+    updateSeatSummary();
+    document.getElementById('seatMsg').textContent = '';
+    document.getElementById('seatOverlay').style.display = 'block';
+    const sm = document.getElementById('seatModal');
+    sm.style.display = 'block';
+    requestAnimationFrame(() => sm.classList.add('open'));
+  }
+
+  function closeSeatModal() {
+    const sm = document.getElementById('seatModal');
+    sm.classList.remove('open');
+    setTimeout(() => { sm.style.display='none'; }, 220);
+    document.getElementById('seatOverlay').style.display = 'none';
+  }
+
+  function confirmSeatSelection() {
+    const state = window._seatState;
+    if (state.selected.size !== state.required) return;
+    // Rect dùng internalId (R_A1) → chuyển về rawId (A1) để gửi backend
+    if (state.layout === 'rect') {
+      window._selectedSeats = Array.from(state.selected).map(internalId => {
+        const seat = state.seats.find(s => s.id === internalId);
+        return seat ? seat.rawId : internalId.replace(/^R_/, '');
+      });
+    } else {
+      window._selectedSeats = Array.from(state.selected);
+    }
+    closeSeatModal();
+    if (typeof window._seatDoneCallback === 'function') window._seatDoneCallback();
+  }
+  </script>
+  <div id="voucherOverlay"
+     class="modal-overlay"
+     style="display:none"
+     onclick="closeVoucherModal()">
+</div>
+
+<div id="voucherModal" class="modal-box" style="display:none">
+
+  <button class="modal-close" onclick="closeVoucherModal()">✕</button>
+
+  <h2 class="modal-event-name" style="display:flex;align-items:center;gap:8px">
+    🎫 Chọn voucher
+  </h2>
+
+  <!-- Input + nút áp dụng cùng hàng -->
+  <div style="display:flex;gap:8px;margin-bottom:12px">
+    <input
+      type="text"
+      id="voucherInput"
+      placeholder="Nhập mã voucher..."
+      oninput="filterVoucherList()"
+      style="flex:1;margin:0" />
+    <button class="filter-btn" onclick="applyVoucher()">Áp dụng</button>
+  </div>
+
+  <!-- Danh sách voucher -->
+  <div id="voucherListDrop" style="
+    border:1px solid #e0e0e0;
+    border-radius:12px;
+    overflow:hidden;
+    max-height:220px;
+    overflow-y:auto;">
+  </div>
+
+  <!-- Thông báo -->
+  <div id="voucherMsg" class="buy-msg" style="margin-top:8px"></div>
+
+  <!-- Tổng tiền + thanh toán -->
+  <hr class="modal-divider" style="margin:16px 0">
+
+  <div class="modal-summary" style="margin-top:0">
+    <div class="modal-total">
+      Tổng cộng:
+      <strong id="voucherFinalPrice">0 ₫</strong>
+    </div>
+      <button class="confirm-buy-btn" onclick="finalConfirmBuy()">
+        Thanh toán →
+      </button>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       BƯỚC 4 — MODAL THANH TOÁN
+       =================================================================== -->
+  <div id="paymentOverlay" class="modal-overlay" style="display:none"></div>
+  <div id="paymentModal"   class="modal-box"     style="display:none">
+    <button class="modal-close" onclick="closePaymentModal()">✕</button>
+    <h2 class="modal-event-name">💳 Thanh toán</h2>
+
+    <div style="background:#f0fdf4;border-radius:10px;padding:10px 14px;margin:14px 0;font-size:.9rem">
+      Tổng tiền: <strong id="paymentTotal" style="color:#dc2626;font-size:1.05rem">0 ₫</strong>
+    </div>
+
+    <p style="font-size:.88rem;color:#555;margin-bottom:14px">Chọn phương thức thanh toán:</p>
+    <div style="display:flex;gap:12px;margin-bottom:18px">
+      <button class="confirm-buy-btn" onclick="selectPaymentMethod('CHUYEN_KHOAN')" style="flex:1">
+        📱 Chuyển khoản
+      </button>
+      <button class="confirm-buy-btn" onclick="selectPaymentMethod('TIEN_MAT')" style="flex:1">
+        💵 Tiền mặt
+      </button>
+    </div>
+
+    <!-- QR chuyển khoản -->
+    <div id="bankSection" style="display:none">
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:8px 0">
+        <img id="qrOrganizerImg" src="" alt="QR thanh toán"
+             style="width:220px;border-radius:14px;border:1px solid #ddd;display:none;margin:0 auto">
+        <p id="qrOrganizerMsg" style="color:#888;font-size:.85rem;margin:8px 0 0"></p>
+        <p style="margin-top:10px;font-size:.88rem;color:#555">Quét mã QR để thanh toán</p>
+        <button class="confirm-buy-btn" onclick="confirmTransferPaid()" style="margin-top:12px">
+          ✅ Đã chuyển khoản
+        </button>
+      </div>
+    </div>
+
+    <!-- Tiền mặt -->
+    <div id="cashSection" style="display:none">
+      <div class="form-group">
+        <label>Tiền khách đưa (₫)</label>
+        <input type="number" id="cashReceive" placeholder="0" oninput="calcCashBack()">
+      </div>
+      <div class="form-group">
+        <label>Tiền trả lại</label>
+        <input type="text" id="cashBack" readonly placeholder="0 ₫">
+      </div>
+      <button class="confirm-buy-btn" onclick="confirmCashPayment()" style="width:100%;margin-top:4px">
+        ✅ Xác nhận thanh toán
+      </button>
+    </div>
+
+    <div id="paymentMsg" class="buy-msg" style="margin-top:14px"></div>
+  </div>
+
+  <!-- ===================================================================
+       MODAL HOÀN VÉ
+       =================================================================== -->
+  <div id="hoanVeOverlay" class="modal-overlay" style="display:none" onclick="closeHoanVeModal()"></div>
+  <div id="hoanVeModal"   class="modal-box" style="display:none">
+    <button class="modal-close" onclick="closeHoanVeModal()">✕</button>
+    <h2 class="modal-event-name">🔄 Yêu cầu hoàn vé</h2>
+    <p id="hoanVeInfo" class="modal-event-date"></p>
+    <hr class="modal-divider">
+    <div class="hoan-ve-form">
+      <label class="hoan-label">Số lượng hoàn</label>
+      <div class="qty-control" style="justify-content:flex-start;margin-bottom:16px">
+        <button class="qty-btn" onclick="changeHoanQty(-1)">−</button>
+        <span class="qty-display" id="hoanQtyDisplay">1</span>
+        <button class="qty-btn" onclick="changeHoanQty(1)">+</button>
+        <span style="margin-left:12px;color:#888;font-size:.85rem" id="hoanQtyMax"></span>
+      </div>
+      <label class="hoan-label">Lý do hoàn vé</label>
+      <textarea id="hoanLyDo" class="hoan-textarea" rows="3"
+                placeholder="Nhập lý do hoàn vé (không bắt buộc)..."></textarea>
+    </div>
+    <div id="hoanVeMsg" class="buy-msg" style="margin-top:10px"></div>
+    <div style="text-align:right;margin-top:16px">
+      <button class="confirm-buy-btn" id="confirmHoanBtn" onclick="confirmHoanVe()">
+        Xác nhận hoàn vé
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== LAYER 1: Tiện ích chung ===== -->
+  <script src="js/common/api.js"></script>
+  <script src="js/common/helpers.js"></script>
+  <script src="js/common/authGuard.js"></script>
+  <script src="js/common/ui.js"></script>
+  <script src="js/common/ticketExport.js"></script>
+
+  <!-- ===== LAYER 2: Model & Service ===== -->
+  <script src="js/common/eventService.js"></script>
+  <script src="js/common/cartModel.js"></script>
+
+  <!-- ===== LAYER 3: View ===== -->
+  <script src="js/common/eventView.js"></script>
+  <script src="js/common/myTicketsView.js"></script>
+
+  <!-- ===== LAYER 4: Controller ===== -->
+  <script src="js/employee/employeeKpiController.js"></script>
+  <script src="js/employee/employeeMyTicketsController.js"></script>
+  <script src="js/employee/employeeController.js"></script>
+
+  <!-- ===== SEAT MAP → VOUCHER MODAL BRIDGE ===== -->
+ <script>
+  // Override openVoucherModal sau khi customerController.js đã load
+  // => intercept ở đây thay vì trong controller
+  window.addEventListener('DOMContentLoaded', function() {
+
+    // ── Ghi nhớ maSuKien và loaiSoDo đang mở để seat map fetch ghế đã đặt ──
+    // Patch openBuyModal của EventView để capture maSuKien + loaiSoDo
+    if (typeof EventView !== 'undefined' && EventView.openBuyModal) {
+      var _origOpenBuyModal = EventView.openBuyModal.bind(EventView);
+      EventView.openBuyModal = function(sk, diaDiem) {
+        window._currentMaSuKien  = sk ? (sk.maSuKien || sk) : null;
+        window._currentLoaiSoDo  = diaDiem
+          ? (diaDiem.loaiSoDo || diaDiem.LoaiSoDo || '')
+          : (sk ? (sk.loaiSoDo || sk.LoaiSoDo
+              || (sk.diaDiem && (sk.diaDiem.loaiSoDo || sk.diaDiem.LoaiSoDo))
+              || '') : '');
+        window._currentSucChua   = diaDiem
+          ? (diaDiem.sucChua || diaDiem.SucChua || null)
+          : (sk?.diaDiem?.sucChua || null);
+        _origOpenBuyModal(sk, diaDiem);
+      };
+    }
+
+    // Lưu lại hàm gốc từ controller
+    var _origOpenVoucherModal = window.openVoucherModal;
+
+    window.openVoucherModal = function() {
+      var items = (typeof CartModel !== 'undefined') ? CartModel.getItems() : [];
+      if (!items || !items.length) {
+        // Gọi hàm gốc để hiện thông báo lỗi
+        if (_origOpenVoucherModal) _origOpenVoucherModal();
+        return;
+      }
+
+      var totalQty = items.reduce(function(s, it) {
+        return s + (it.soLuong || it.qty || it.quantity || 1);
+      }, 0) || 1;
+
+      var eventName = (document.getElementById("modalEventName") || {}).textContent || "";
+      var eventDate = (document.getElementById("modalEventDate") || {}).textContent || "";
+
+      // Đóng buy modal
+      var buyOverlay = document.getElementById("buyOverlay");
+      var buyModal   = document.getElementById("buyModal");
+      if (buyOverlay) buyOverlay.style.display = "none";
+      if (buyModal)   buyModal.style.display   = "none";
+      if (typeof EventView !== "undefined" && EventView.closeBuyModal) {
+        // KHÔNG gọi closeBuyModal vì có thể reset cart
+      }
+
+      // Lưu callback để seat map gọi lại sau khi chọn xong
+      // Nhân viên: đi thẳng đến _proceedToVoucherModal (bước voucher)
+      // rồi finalConfirmBuy() → _openPaymentModal()
+      window._seatDoneCallback = function() {
+        if (typeof _proceedToVoucherModal === 'function') {
+          _proceedToVoucherModal();
+        } else if (typeof finalConfirmBuy === 'function') {
+          finalConfirmBuy();
+        }
+      };
+
+      // Lấy mã sự kiện đang mở từ controller (gán bởi customerController)
+      var maSuKien = window._currentMaSuKien || null;
+
+      function _openSeatWithBooked(bookedSet) {
+        // Lấy loaiSoDo từ sự kiện hiện tại (đã cache bởi EventService hoặc lưu bởi controller)
+        var loaiSoDo = window._currentLoaiSoDo || '';
+        openSeatModal(eventName, eventDate, totalQty, bookedSet, loaiSoDo);
+      }
+
+      if (maSuKien && typeof EventService !== 'undefined' && EventService.getBookedSeats) {
+        // Fetch ghế đã đặt từ backend, lọc ra những ghế không còn hiển thị
+        EventService.getBookedSeats(maSuKien)
+          .then(function(data) {
+            // Backend có thể trả về mảng string ["A1","B2"] hoặc mảng object [{maGhe:"A1",...}]
+            var booked;
+            if (Array.isArray(data)) {
+              booked = new Set(data.map(function(item) {
+                return (typeof item === 'string') ? item : (item.khuVuc || '');
+              }).filter(Boolean));
+            } else {
+              booked = new Set();
+            }
+            // Nếu loaiSoDo chưa có, thử lấy từ EventService cache/detail
+            if (!window._currentLoaiSoDo && typeof EventService.getById === 'function') {
+              EventService.getById(maSuKien)
+                .then(function(sk) {
+                  var lsd = sk
+                    ? (sk.loaiSoDo || sk.LoaiSoDo
+                        || (sk.diaDiem && (sk.diaDiem.loaiSoDo || sk.diaDiem.LoaiSoDo))
+                        || '')
+                    : '';
+                  window._currentLoaiSoDo = lsd;
+                  // Fetch địa điểm thêm để lấy sucChua
+                  var ddId = sk ? (sk.maDiaDiem || (sk.diaDiem && sk.diaDiem.maDiaDiem)) : null;
+                  if (ddId && typeof apiFetch === 'function') {
+                    apiFetch('/diadiem/' + ddId)
+                      .then(function(dd) {
+                        window._currentSucChua = dd.sucChua || dd.SucChua || null;
+                        if (!lsd) window._currentLoaiSoDo = dd.loaiSoDo || dd.LoaiSoDo || '';
+                        _openSeatWithBooked(booked);
+                      })
+                      .catch(function() { _openSeatWithBooked(booked); });
+                  } else {
+                    _openSeatWithBooked(booked);
+                  }
+                })
+                .catch(function() { _openSeatWithBooked(booked); });
+            } else {
+              _openSeatWithBooked(booked);
+            }
+          })
+          .catch(function(err) {
+            console.warn('[SeatMap] Không thể tải ghế đã đặt, mở sơ đồ trống:', err);
+            _openSeatWithBooked(new Set());
+          });
+      } else {
+        // Không có API → mở bình thường không có dữ liệu booked
+        _openSeatWithBooked(new Set());
+      }
+    };
+
+  });
+  </script>
+
+  <!-- ===== PATCH: Hook lọc ngày vào employeeMyTicketsController ===== -->
+  <script>
+  // Sau khi tất cả script load, wrap hàm loadMyTickets để lưu raw data
+    // Override openVoucherModal sau khi customerController.js đã load
+  window.addEventListener('DOMContentLoaded', function() {
+    function extractLoaiSoDo(sk) {
+      if (!sk) return '';
+      var lsd = sk.loaiSoDo || sk.LoaiSoDo || sk.loaisodo;
+      if (lsd) return lsd;
+      var dd = sk.diaDiem || sk.diadiem || sk.DiaDiem || sk.DIADIEM;
+      if (dd) return dd.loaiSoDo || dd.LoaiSoDo || dd.loaisodo || '';
+      return '';
+    }
+    // ── 1. Ghi nhớ maSuKien, maDiaDiem và loaiSoDo đang mở ──
+    if (typeof EventView !== 'undefined' && EventView.openBuyModal) {
+      var _origOpenBuyModal = EventView.openBuyModal.bind(EventView);
+      EventView.openBuyModal = function(sk, diaDiem) {
+        window._currentMaSuKien  = sk ? (sk.maSuKien || sk.MaSuKien || sk.id) : null;
+        window._currentMaDiaDiem = sk ? (sk.maDiaDiem || sk.MaDiaDiem) : null;
+        window._currentLoaiSoDo  = diaDiem
+          ? (diaDiem.loaiSoDo || diaDiem.LoaiSoDo || '')
+          : extractLoaiSoDo(sk);
+        window._currentSucChua   = diaDiem
+          ? (diaDiem.sucChua || diaDiem.SucChua || null)
+          : (sk?.diaDiem?.sucChua || null);
+        _origOpenBuyModal(sk, diaDiem);
+      };
+    }
+    var _origOpenVoucherModal = window.openVoucherModal;
+    window.openVoucherModal = function() {
+      var items = (typeof CartModel !== 'undefined') ? CartModel.getItems() : [];
+      if (!items || !items.length) {
+        if (_origOpenVoucherModal) _origOpenVoucherModal();
+        return;
+      }
+      var totalQty = items.reduce(function(s, it) {
+        return s + (it.soLuong || it.qty || it.quantity || 1);
+      }, 0) || 1;
+      var eventName = (document.getElementById("modalEventName") || {}).textContent || "";
+      var eventDate = (document.getElementById("modalEventDate") || {}).textContent || "";
+      var buyOverlay = document.getElementById("buyOverlay");
+      var buyModal   = document.getElementById("buyModal");
+      if (buyOverlay) buyOverlay.style.display = "none";
+      if (buyModal)   buyModal.style.display   = "none";
+      window._seatDoneCallback = function() {
+        if (typeof _proceedToVoucherModal === 'function') {
+          _proceedToVoucherModal();
+        } else if (typeof finalConfirmBuy === 'function') {
+          finalConfirmBuy();
+        }
+      };
+      var maSuKien = window._currentMaSuKien || null;
+      var maDiaDiem = window._currentMaDiaDiem || null;
+      function _openSeatWithBooked(bookedSet) {
+        var loaiSoDo = window._currentLoaiSoDo || '';
+        openSeatModal(eventName, eventDate, totalQty, bookedSet, loaiSoDo);
+      }
+      // ── 2. Hàm xử lý gọi thêm API địa điểm nếu chưa biết loại sơ đồ ──
+      function _fetchDiaDiemThenOpen(booked) {
+        if (!window._currentLoaiSoDo && maDiaDiem) {
+          console.log("Đang gọi API lấy loại sơ đồ cho địa điểm ID:", maDiaDiem);
+          
+          // LƯU Ý: Sửa lại 'http://localhost:8080' thành URL Backend của bạn (nếu cổng khác)
+          (typeof apiFetch === 'function'
+            ? apiFetch('/diadiem/' + maDiaDiem)
+            : fetch('http://localhost:8080/api/diadiem/' + maDiaDiem).then(r => r.json()))
+            .then(function(diaDiem) {
+              window._currentLoaiSoDo = diaDiem.loaiSoDo || diaDiem.LoaiSoDo || '';
+              window._currentSucChua  = diaDiem.sucChua  || diaDiem.SucChua  || null;
+              _openSeatWithBooked(booked);
+            })
+            .catch(function(err) {
+              console.error("Lỗi lấy địa điểm:", err);
+              _openSeatWithBooked(booked);
+            });
+        } else {
+          _openSeatWithBooked(booked);
+        }
+      }
+      // ── 3. Gọi API lấy ghế đã đặt, rồi gọi tiếp API địa điểm (nếu cần) ──
+      if (maSuKien && typeof EventService !== 'undefined' && EventService.getBookedSeats) {
+        EventService.getBookedSeats(maSuKien)
+          .then(function(data) {
+            var booked = new Set();
+            if (Array.isArray(data)) {
+              booked = new Set(data.map(function(item) {
+                return (typeof item === 'string') ? item : (item.khuVuc || '');
+              }).filter(Boolean));
+            }
+            _fetchDiaDiemThenOpen(booked); // Chuyển sang bước lấy địa điểm
+          })
+          .catch(function(err) {
+            console.warn('[SeatMap] Không thể tải ghế đã đặt:', err);
+            _fetchDiaDiemThenOpen(new Set());
+          });
+      } else {
+        _fetchDiaDiemThenOpen(new Set());
+      }
+    };
+  });
+  </script>
+
+    <!-- Chatbot Widget -->
+  <div id="chatbot-container"></div>
+
+  <style>
+    /* Nút mở chatbot góc phải màn hình */
+    #chat-toggle {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #1a73e8;
+      color: #fff;
+      font-size: 24px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      z-index: 999;
+    }
+
+    #chat-frame {
+      display: none;
+      position: fixed;
+      bottom: 90px;
+      right: 24px;
+      width: 400px;
+      height: 600px;
+      border: none;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+      z-index: 998;
+    }
+
+    #chat-frame.open { display: block; }
+  </style>
+
+  <button id="chat-toggle" onclick="toggleChat()">🎫</button>
+  <iframe id="chat-frame" src="chatbot.html"></iframe>
+
+  <script>
+    function toggleChat() {
+      document.getElementById('chat-frame').classList.toggle('open');
+    }
+  </script>
+
+  <script src="js/common/sessionGuard.js"></script>
+  <script src="js/common/seatHoldPatch.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+</body>
+</html>

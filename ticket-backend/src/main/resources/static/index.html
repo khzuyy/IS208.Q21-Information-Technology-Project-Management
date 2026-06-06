@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1, width=device-width" />
+  <title>TICKET — Khám phá sự kiện</title>
+  <link rel="stylesheet" href="css/font.css" />
+<link rel="stylesheet" href="css/login.css" />
+  <link rel="stylesheet" href="css/index.css" />
+
+</head>
+<body>
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="header">
+    <div class="header-child"></div>
+    <div class="ticket-wrapper">
+      <div class="ticket">TICKET</div>
+    </div>
+    <div class="frame-parent">
+      <div class="bn-cn-tm-g-wrapper">
+        <h3 class="bn-cn-tm">Bạn cần tìm gì</h3>
+      </div>
+      <input class="search-area" type="text" id="headerSearch"
+             placeholder="Tìm sự kiện, nghệ sĩ..." oninput="onHeaderSearch()" />
+      <button class="ng-nhp-ng-k-wrapper" type="button" onclick="openPopup()">
+        Đăng nhập | Đăng ký
+      </button>
+    </div>
+  </header>
+
+  <!-- ===================== HERO ===================== -->
+  <section class="hero">
+    <div class="hero-left">
+      <span class="hero-eyebrow">🎪 Nền tảng vé sự kiện #1 Việt Nam</span>
+      <h1 class="hero-title">
+        Khám phá những<br>
+        <span>sự kiện tuyệt vời</span><br>
+        đang chờ bạn
+      </h1>
+      <p class="hero-sub">
+        Từ concert âm nhạc, hội thảo công nghệ đến lễ hội nghệ thuật —
+        tìm và mua vé dễ dàng, nhanh chóng, an toàn.
+      </p>
+      <div class="hero-cta-row">
+        <button class="hero-cta-primary" onclick="scrollToEvents()">
+          🎫 Khám phá sự kiện
+        </button>
+        <button class="hero-cta-secondary" onclick="openPopup()">
+          Đăng nhập →
+        </button>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-num" id="statEvents">—</span>
+          <span class="hero-stat-label">Sự kiện</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-num">100%</span>
+          <span class="hero-stat-label">Bảo mật</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-num">Ngay</span>
+          <span class="hero-stat-label">Nhận vé tức thì</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-blob-1"></div>
+    <div class="hero-blob-2"></div>
+    <div class="hero-blob-3"></div>
+  </section>
+
+  <!-- ===================== CATEGORY STRIP ===================== -->
+  <div class="category-strip">
+    <span class="cat-label">Thể loại:</span>
+    <button class="cat-chip active" onclick="filterByCategory(this, '')">Tất cả</button>
+    <button class="cat-chip" onclick="filterByCategory(this, 'concert')">🎵 Concert</button>
+    <button class="cat-chip" onclick="filterByCategory(this, 'rap')">🎤 Rap</button>
+    <button class="cat-chip" onclick="filterByCategory(this, 'nhạc')">🎶 Âm nhạc</button>
+    <button class="cat-chip" onclick="filterByCategory(this, 'điện tử')">🎧 Nhạc điện tử</button>
+    <button class="cat-chip" onclick="filterByCategory(this, 'hội thảo')">💼 Hội thảo</button>
+    <button class="cat-chip" onclick="filterByCategory(this, 'nghệ thuật')">🎨 Nghệ thuật</button>
+  </div>
+
+  <!-- ===================== EVENTS SECTION ===================== -->
+  <div class="section-wrapper" id="eventsSection">
+    <div class="section-header">
+      <h2 class="section-title-text">Sự kiện <span>nổi bật</span></h2>
+      <div class="section-search">
+        <input type="text" id="searchInput" placeholder="🔍 Tìm sự kiện..."
+               oninput="applyFilter()" />
+        <select id="sortSelect" onchange="applyFilter()">
+          <option value="">Sắp xếp</option>
+          <option value="asc">Ngày tăng dần</option>
+          <option value="desc">Ngày giảm dần</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="event-grid-public" id="eventGrid">
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Đang tải sự kiện...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== TRUST STRIP ===================== -->
+  <div class="trust-strip">
+    <div class="trust-item">
+      <span class="trust-icon">🔒</span>
+      <div class="trust-text">
+        <strong>Thanh toán bảo mật</strong>
+        <span>Mã hóa SSL 256-bit</span>
+      </div>
+    </div>
+    <div class="trust-item">
+      <span class="trust-icon">⚡</span>
+      <div class="trust-text">
+        <strong>Vé tức thì</strong>
+        <span>Nhận ngay sau thanh toán</span>
+      </div>
+    </div>
+    <div class="trust-item">
+      <span class="trust-icon">🎫</span>
+      <div class="trust-text">
+        <strong>Vé chính hãng</strong>
+        <span>Cam kết 100% chính hãng</span>
+      </div>
+    </div>
+    <div class="trust-item">
+      <span class="trust-icon">🤝</span>
+      <div class="trust-text">
+        <strong>Hỗ trợ 24/7</strong>
+        <span>Luôn sẵn sàng giúp bạn</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="site-footer">
+    © 2026 <strong>TICKET</strong> — Nền tảng mua bán vé sự kiện trực tuyến.
+  </footer>
+
+  <!-- ===================== LOGIN POPUP ===================== -->
+  <div id="overlay" onclick="closePopup()"></div>
+  <div id="popup">
+    <iframe src="loginpopup.html"></iframe>
+  </div>
+
+  <!-- ===================== SCRIPTS ===================== -->
+  <script src="js/common/api.js"></script>
+  <script src="js/common/ui.js"></script>
+  <script src="js/auth/index.js"></script>
+</body>
+</html>

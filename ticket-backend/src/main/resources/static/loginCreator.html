@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1, width=device-width" />
+  <title>TICKET — Nhà tổ chức sự kiện</title>
+  <link rel="stylesheet" href="css/font.css" />
+<link rel="stylesheet" href="css/login.css" />
+  <link rel="stylesheet" href="css/customer.css" />
+
+</head>
+<body>
+  <div class="login">
+    <header class="header">
+      <div class="header-child"></div>
+      <div class="ticket-wrapper">
+        <div class="ticket">TICKET</div>
+      </div>
+      <div class="frame-parent">
+        <div class="bn-cn-tm-g-wrapper">
+          <h3 class="bn-cn-tm">Bạn cần tìm gì</h3>
+        </div>
+        <input class="search-area" />
+        <div class="dropdown">
+          <button class="btn" onclick="toggleMenu(event)">
+            <span class="avatar-icon">👤</span> Tài khoản
+          </button>
+          <div id="menu" class="dropdown-content">
+            <a href="hoSo.html">🙍 Hồ sơ tài khoản</a>
+            <a href="doiMatKhau.html">🔑 Đổi mật khẩu</a>
+            <hr style="margin:4px 0; border-color:#eee;">
+            <a href="#" onclick="logout()" class="logout-link">🚪 Đăng xuất</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="rectangle-parent">
+      <div class="action-buttons">
+        <button type="button" onclick="loadTickets()">Quản lý phát hành vé</button>
+        <button type="button" onclick="loadEvents()">Quản lý sự kiện</button>
+        <button type="button" onclick="loadVouchers()">Quản lý khuyến mãi</button>
+        <button type="button" onclick="loadHoanVe()">Yêu cầu hoàn vé</button>
+        <button type="button" onclick="followIncome()">📊 Theo dõi doanh thu</button>
+      </div>
+    </section>
+
+    <div class="content-area">
+      <div id="ticketList"></div>
+      <div id="eventList"></div>
+      <div id="voucherList"></div>
+      <div id="hoanVeList"></div>
+    </div>
+  </div>
+  <!-- Chatbot Widget -->
+  <div id="chatbot-container"></div>
+
+  <style>
+    /* Nút mở chatbot góc phải màn hình */
+    #chat-toggle {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #1a73e8;
+      color: #fff;
+      font-size: 24px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      z-index: 999;
+    }
+
+    #chat-frame {
+      display: none;
+      position: fixed;
+      bottom: 90px;
+      right: 24px;
+      width: 400px;
+      height: 600px;
+      border: none;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+      z-index: 998;
+    }
+
+    #chat-frame.open { display: block; }
+  </style>
+
+  <button id="chat-toggle" onclick="toggleChat()">🎫</button>
+  <iframe id="chat-frame" src="chatbot.html"></iframe>
+
+  <script>
+    function toggleChat() {
+      document.getElementById('chat-frame').classList.toggle('open');
+    }
+  </script>
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+  <script src="js/common/api.js"></script>
+  <script src="js/common/authGuard.js"></script>
+  <script src="js/common/ui.js"></script>
+  <script src="js/ticket/ticketList.js"></script>
+  <script src="js/event/eventList.js"></script>
+  <script src="js/voucher/voucherList.js"></script>
+  <script src="js/income/incomeList.js"></script>
+  <script src="js/ticket/hoanVe.js"></script>
+  <script src="js/common/sessionGuard.js"></script>
+</html>

@@ -1,0 +1,15 @@
+    body { background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+    .card { background: #fff; padding: 36px 40px; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.1); width: 100%; max-width: 420px; }
+    h2 { text-align: center; margin-bottom: 28px; font-size: 1.5rem; color: #222; }
+    .form-group { margin-bottom: 18px; }
+    .form-group label { display: block; margin-bottom: 6px; font-size: 0.875rem; font-weight: 600; color: #555; }
+    .form-group input { width: 100%; padding: 11px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem; box-sizing: border-box; transition: border-color 0.2s; }
+    .form-group input:focus { outline: none; border-color: #3cdbd8; box-shadow: 0 0 0 3px rgba(60,219,216,0.15); }
+    .btn-row { display: flex; gap: 12px; margin-top: 24px; }
+    .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+    .btn-primary { background: #3cdbd8; color: #fff; }
+    .btn-secondary { background: #eee; color: #555; }
+    .btn:hover { opacity: 0.85; }
+    .msg { margin-top: 14px; text-align: center; font-size: 0.9rem; }
+    .msg.ok  { color: #22c55e; }
+    .msg.err { color: #ef4444; }

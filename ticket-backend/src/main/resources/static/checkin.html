@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Check-in Vé</title>
+
+    <!-- THƯ VIỆN QUÉT QR -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <style>
+        body{
+            font-family: Arial;
+            padding:20px;
+        }
+
+        #reader{
+            width:400px;
+            margin:auto;
+        }
+
+        #result{
+            margin-top:20px;
+            text-align:center;
+            font-size:20px;
+            font-weight:bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Quét QR Check-in</h1>
+
+    <!-- CAMERA -->
+    <div id="reader"></div>
+
+    <!-- KẾT QUẢ -->
+    <div id="result"></div>
+
+    <!-- GUARD: chỉ nhân viên mới được vào trang này -->
+     <!--
+    <script>
+      (function () {
+        var SESSION_KEY = "Nhân viên"; // đổi nếu key khác trong dự án
+        var session = null;
+        try { session = JSON.parse(sessionStorage.getItem(SESSION_KEY)); } catch(e) {}
+        if (!session || !session.maNhanVien) {
+          // Không có session nhân viên → redirect về trang login nhân viên
+          alert("⛔ Bạn cần đăng nhập với tư cách nhân viên để sử dụng tính năng này.");
+          window.location.replace("loginEmployee.html");
+        }
+      })();
+    </script>
+-->
+    <!-- FILE JS -->
+    <script src="/js/common/checkin.js"></script>
+
+</body>
+</html>

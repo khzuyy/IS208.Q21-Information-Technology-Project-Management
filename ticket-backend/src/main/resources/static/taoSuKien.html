@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Tạo sự kiện</title>
+  <link rel="stylesheet" href="css/font.css" />
+  <link rel="stylesheet" href="css/createEvent.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Tạo sự kiện</h1>
+
+    <div class="form-group">
+      <label>Tên sự kiện</label>
+      <input type="text" id="tenSuKien" placeholder="Nhập tên sự kiện">
+    </div>
+
+    <div class="form-group">
+      <label>Mô tả</label>
+      <textarea id="moTa" placeholder="Nhập mô tả"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Địa điểm</label>
+      <select id="diaDiem">
+        <option value="">-- Đang tải địa điểm... --</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Thời gian bắt đầu</label>
+      <input type="date" id="thoiGianBatDau">
+    </div>
+
+    <div class="form-group">
+      <label>Thời gian kết thúc</label>
+      <input type="date" id="thoiGianKetThuc">
+    </div>
+
+    <div id="msgBox"></div>  <!-- ← thêm vào đây -->
+
+    <div class="button-group">
+      <button class="create-btn" onclick="handleCreateEvent()">Tạo sự kiện</button>
+      <button class="cancel-btn" onclick="goBack()">Hủy</button>
+    </div>
+  </div>
+
+  <script src="js/common/api.js"></script>
+  <script src="js/common/authGuard.js"></script>
+  <script src="js/event/createEvent.js"></script>
+</body>
+</html>
