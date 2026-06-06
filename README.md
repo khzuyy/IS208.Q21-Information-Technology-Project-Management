@@ -5,7 +5,7 @@
 </p>
 
 <!-- Title -->
-<h1 align="center"><b>IS216 - LẬP TRÌNH JAVA</b></h1>
+<h1 align="center"><b>IS208 - QUẢN LÝ DỰ ÁN CÔNG NGHỆ THÔNG TIN</b></h1>
 
 ## BẢNG MỤC LỤC
 * [ Giới thiệu đồ án](#gioithieudoan)
@@ -15,7 +15,7 @@
 
 ## GIỚI THIỆU ĐỒ ÁN
 <a name="gioithieudoan"></a>
--    **Đề tài:** HỆ THỐNG QUẢN LÍ VÀ PHÂN PHỐI VÉ SỰ KIỆN GIẢI TRÍ
+-    **Đề tài:** HỆ THỐNG QUẢN LÝ VÀ PHÂN PHỐI VÉ SỰ KIỆN GIẢI TRÍ
 -    **Repository BACKEND:** 
 -    **Repository FRONTEND:** 
 
@@ -37,7 +37,7 @@
 | 2   | 24520370 | Hà Phan Khánh Duy    | https://github.com/khzuy               | *24520370@gm.uit.edu.vn* |
 | 3   | 24521751 | Hồ Thị Phương Thùy   | https://github.com/phthuyy             | *24521751@gm.uit.edu.vn* |
 | 4   | 24521651 | Trần Thị Thanh Thảo  | https://github.com/thanhtharo          | *24521651@gm.uit.edu.vn* |
-| 5   | 24520500 | Nguyễn Đoàn Đức Hiếu | https://github.com/DalzielNguyen-1611  | *24520500@gm.uit.edu.vn* |
+| 5   | 24520500 | Đinh Vũ Minh Khôi    |                                        | *24520857@gm.uit.edu.vn* |
 
 ## ĐỘNG LỰC HÌNH THÀNH DỰ ÁN
 ## MỤC TIÊU DỰ ÁN
